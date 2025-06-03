@@ -1,0 +1,32 @@
+﻿@page "/"
+
+@inject NavigationManager Navigation
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-3">Bem-vindo ao <strong>ClientesWeb</strong></h1>
+            <p class="lead text-muted mb-4">
+                Esta aplicação web permite o gerenciamento de clientes utilizando um backend baseado em arquitetura <strong>CQRS</strong> com <strong>.NET 9</strong>.
+                Desenvolvido como parte do <strong>treinamento C#.NET Arquiteto - turma Fiotech</strong>.
+            </p>
+
+            <hr class="my-4" />
+
+            <p class="mb-4">
+                Navegue, cadastre, atualize e exclua clientes de forma prática e intuitiva.
+            </p>
+
+            <button class="btn btn-primary btn-lg" @onclick="IrParaClientes">
+                <i class="bi bi-people-fill me-2"></i> Acessar Consulta de Clientes
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void IrParaClientes()
+    {
+        Navigation.NavigateTo("/clientes");
+    }
+}

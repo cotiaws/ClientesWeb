@@ -1,0 +1,120 @@
+﻿@page "/clientes"
+
+@using ClientesWeb.Models
+@using ClientesWeb.Services
+
+@inject IClienteService ClienteService
+@inject NavigationManager Navigation
+
+<div class="card shadow-lg mt-4 mx-3 p-4 rounded-3">
+    <div class="card-body">
+        <h2 class="card-title mb-1">Lista de Clientes</h2>
+        <h6 class="card-subtitle mb-4 text-muted">Visualize, edite ou exclua os clientes cadastrados.</h6>
+        <hr />
+
+        <button class="btn btn-success btn-sm mb-3" @onclick="NovoCliente">+ Novo Cliente</button>
+
+        @if (clientes is null)
+        {
+            <p><em>Carregando...</em></p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>CPF</th>
+                            <th style="width: 200px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cliente in clientes)
+                        {
+                            <tr>
+                                <td>@cliente.Nome</td>
+                                <td>@cliente.Email</td>
+                                <td>@cliente.Cpf</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm me-2" @onclick="() => Editar(cliente.Id)">Editar</button>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => Excluir(cliente.Id)">Excluir</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                <button class="btn btn-outline-primary me-2" @onclick="PaginaAnterior" disabled="@(!TemPaginaAnterior)">
+                    <i class="bi bi-chevron-left"></i> Anterior
+                </button>
+                <button class="btn btn-outline-primary" @onclick="ProximaPagina" disabled="@(!TemProximaPagina)">
+                    Próxima <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ClienteQuery>? clientes;
+
+    private int paginaAtual = 1;
+    private int itensPorPagina = 4;
+
+    private int totalRegistros = 250;
+    private int totalPaginas => (int)Math.Ceiling((double)totalRegistros / itensPorPagina);
+
+    private bool TemPaginaAnterior => paginaAtual > 1;
+    private bool TemProximaPagina => paginaAtual < totalPaginas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarClientes();
+    }
+
+    private async Task CarregarClientes()
+    {
+        clientes = await ClienteService.ObterTodosAsync(paginaAtual, itensPorPagina);
+    }
+
+    private async Task Excluir(Guid id)
+    {
+        var sucesso = await ClienteService.DeletarAsync(id);
+        if (sucesso)
+        {
+            await CarregarClientes();
+        }
+    }
+
+    private void Editar(Guid id)
+    {
+        Navigation.NavigateTo($"/clientes/editar/{id}");
+    }
+
+    private void NovoCliente()
+    {
+        Navigation.NavigateTo("/clientes/novo");
+    }
+
+    private async Task PaginaAnterior()
+    {
+        if (TemPaginaAnterior)
+        {
+            paginaAtual--;
+            await CarregarClientes();
+        }
+    }
+
+    private async Task ProximaPagina()
+    {
+        if (TemProximaPagina)
+        {
+            paginaAtual++;
+            await CarregarClientes();
+        }
+    }
+}

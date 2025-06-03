@@ -1,0 +1,50 @@
+﻿@page "/clientes/novo"
+
+@using ClientesWeb.Models
+@using ClientesWeb.Services
+
+@inject IClienteService ClienteService
+@inject NavigationManager Navigation
+
+<div class="card shadow-lg mt-4 mx-3 p-4 rounded-3">
+    <div class="card-body">
+        <h2 class="card-title mb-1">Cadastro de Cliente</h2>
+        <h6 class="card-subtitle mb-4 text-muted">Preencha os campos abaixo para adicionar um novo cliente ao sistema.</h6>
+        <hr />
+
+        <EditForm Model="cliente" OnValidSubmit="Salvar">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="mb-3" />
+
+            <div class="form-group mb-3">
+                <label>Nome:</label>
+                <InputText class="form-control" @bind-Value="cliente.Nome" placeholder="Digite o nome completo" />
+                <ValidationMessage For="@(() => cliente.Nome)" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label>Email:</label>
+                <InputText class="form-control" @bind-Value="cliente.Email" placeholder="exemplo@email.com" />
+                <ValidationMessage For="@(() => cliente.Email)" />
+            </div>
+
+            <div class="form-group mb-4">
+                <label>CPF:</label>
+                <InputText class="form-control" @bind-Value="cliente.Cpf" placeholder="Somente números" />
+                <ValidationMessage For="@(() => cliente.Cpf)" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Cadastrar</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private ClienteCreateCommand cliente = new();
+
+    private async Task Salvar()
+    {
+        await ClienteService.CriarAsync(cliente);
+        Navigation.NavigateTo("/clientes");
+    }
+}
